@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Imports;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -100,6 +101,80 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
             return order;
+        }
+
+        public static void DeleteOrders()
+        {
+            List<OrderModel> orders = GetOrders();
+
+            foreach (var order in orders)
+            {
+                if (BaseLinkerImport.OrderImport(order.ID_zamowienia).order_status_id != Config.status_id)
+                {
+                    using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                    {
+                        SqlCommand command = new SqlCommand($"DELLETE FROM Zamowienie WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
+                        Connection.Open();
+
+                        SqlDataReader reader = command.ExecuteReader();
+                        reader.Close();
+
+                        SqlCommand commandPossition = new SqlCommand($"DELLETE FROM Pozycja WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
+
+                        SqlDataReader readerPosition = commandPossition.ExecuteReader();
+                        readerPosition.Close();
+
+                        Connection.Close();
+                    }
+                }
+            }
+        }
+
+        public static void AddOrders()
+        {
+            List<OrderModel> orders = GetOrders();
+            var baseLinkerOrders = BaseLinkerImport.OrdersImport();
+            
+            foreach (var order in baseLinkerOrders)
+            {
+                if (!orders.Where(x=>x.ID_zamowienia == order.order_id).Any())
+                {
+                    using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                    {
+                        SqlCommand command = new SqlCommand($"INSERT INTO Zamowienie (ID_zamowienia, Czy_na_stanie) VALUES ({order.order_id}, {IsAvailable(order)})", Connection);
+                        if(order.products.Count == 1)
+                        {
+                            var product = ProductDbC.GetProduct(order.products.First().sku);
+                            
+                            if(product != null)
+                                command = new SqlCommand($"INSERT INTO Zamowienie (ID_zamowienia, ID_kartonu, Czy_na_stanie) VALUES ({order.order_id}, {product.ID_kartonu}, {IsAvailable(order)})", Connection);
+                        }
+
+                        Connection.Open();
+
+                        SqlDataReader reader = command.ExecuteReader();
+                        reader.Close();
+
+                        foreach (var product in order.products)
+                        {
+                            SqlCommand commandProduct = new SqlCommand($"INSERT INTO Pozycja (SKU, Ilosc, ID_zamowienia) VALUES ({product.sku}, {product.quantity}, {order.order_id})", Connection);
+                            SqlDataReader readerProduct = commandProduct.ExecuteReader();
+                            readerProduct.Close();
+                        }
+
+                        Connection.Close();
+                    }
+                }
+            }
+        }
+
+        public static bool IsAvailable(ResponsePage order)
+        {
+            var products = ProductDbC.GetAvailableProducts();
+            
+            return order.products.Where(x=> products
+                                    .Where(y=>y.SKU == x.sku).Any())
+                                .Any();
         }
     }
 }
