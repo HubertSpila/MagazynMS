@@ -21,7 +21,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     {
                         ID_zamowienia = (int)reader[0],
                         ID_kartonu = (int)reader[1],
-                        Czy_na_stanie = (bool)reader[2],
+                        Czy_na_stanie = reader[2].ToString() == "0",
                         Pozycje = new List<PositionModel>()
                     });
                 }
@@ -69,7 +69,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     {
                         ID_zamowienia = (int)reader[0],
                         ID_kartonu = (int)reader[1],
-                        Czy_na_stanie = (bool)reader[2],
+                        Czy_na_stanie = reader[2].ToString() == "0",
                         Pozycje = new List<PositionModel>()
                     };
                 }
