@@ -11,7 +11,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
-                SqlCommand command = new SqlCommand($"SELECT * FROM Konfiguracja", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Konfiguracja WHERE Nazwa_uzytkownika = {user}", Connection);
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
