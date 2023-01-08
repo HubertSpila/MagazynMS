@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
+using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Controllers
 {
@@ -8,11 +9,19 @@ namespace WarehouseManagmentAPI.Controllers
     public class CartonsController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get()
+        public ActionResult<IEnumerable<CartonModel>> GetCartons()
         {
-            var t = CartonDbC.GetCartons();
+            var cartons = CartonDbC.GetCartons();
 
-            return null;
+            return Ok(cartons);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<IEnumerable<CartonModel>> GetCarton(string id)
+        {
+            var carton = CartonDbC.GetCarton(id);
+
+            return Ok(carton);
         }
     }
 }

@@ -5,12 +5,11 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class StatisticsDbC
     {
-        private static string _connectionString = @"Data Source=.\SQLExpress;Initial Catalog=MagazynMS;Trusted_Connection=True";
         public static List<StatisticModel> GetStatistics()
         {
             List<StatisticModel> statistics = new List<StatisticModel>();
 
-            using (SqlConnection Connection = new SqlConnection(_connectionString))
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 SqlCommand command = new SqlCommand($"SELECT * FROM Statystyki", Connection);
                 Connection.Open();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 using WarehouseManagmentAPI.Models;
 
@@ -8,6 +9,30 @@ namespace WarehouseManagmentAPI.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
+        [HttpGet]
+        public ActionResult<IEnumerable<ProductModel>> GetProducts()
+        {
+            List<ProductModel> products = ProductDbC.GetProducts();
+
+            return Ok(products);
+        }
+
+        [HttpGet("{sku}")]
+        public ActionResult<ProductModel> GetProducts(string sku)
+        {
+            ProductModel product = ProductDbC.GetProduct(sku);
+
+            return Ok(product);
+        }
+
+        //-----------------------------------------------
+        [HttpDelete("{sku}")]
+        public ActionResult DeleteProduct(string sku)
+        {
+
+            return NoContent();
+        }
+
         [HttpPost]
         public ActionResult<ProductModel> AddProduct(ProductPostModel productToAdd)
         {
@@ -16,13 +41,6 @@ namespace WarehouseManagmentAPI.Controllers
             ProductModel newProduct = new ProductModel(productToAdd);
 
             return Ok(newProduct);
-        }
-
-        [HttpDelete("{sku}")]
-        public ActionResult DeleteProduct(string sku)
-        {
-            
-            return NoContent();
         }
     }
 }

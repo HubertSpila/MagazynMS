@@ -5,12 +5,11 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class ProductDbC
     {
-        private static string _connectionString = @"Data Source=.\SQLExpress;Initial Catalog=MagazynMS;Trusted_Connection=True";
         public static List<ProductModel> GetProducts()
         {
             List<ProductModel> products = new List<ProductModel>();
 
-            using (SqlConnection Connection = new SqlConnection(_connectionString))
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 SqlCommand command = new SqlCommand($"SELECT * FROM Towar", Connection);
                 Connection.Open();
@@ -33,6 +32,34 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
             return products;
+        }
+        public static ProductModel GetProduct(string sku)
+        {
+            ProductModel product = new ProductModel();
+
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE SKU = {sku}", Connection);
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    product = new ProductModel()
+                    {
+                        SKU = reader[0].ToString(),
+                        Nazwa_produktu = reader[1].ToString(),
+                        ID_kartonu = (int)reader[2],
+                        Stan_magazynowy = (int)reader[3],
+                        Potrzebna_ilosc = (int)reader[4]
+                    };
+                }
+
+                reader.Close();
+                Connection.Close();
+            }
+
+            return product;
         }
     }
 }

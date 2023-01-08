@@ -5,12 +5,11 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class ConfigurationDbC
     {
-        private static string _connectionString = @"Data Source=.\SQLExpress;Initial Catalog=MagazynMS;Trusted_Connection=True";
         public static ConfigurationModel GetConfiguration(string user)
         {
             ConfigurationModel configuration = new ConfigurationModel();
 
-            using (SqlConnection Connection = new SqlConnection(_connectionString))
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 SqlCommand command = new SqlCommand($"SELECT * FROM Konfiguracja", Connection);
                 Connection.Open();

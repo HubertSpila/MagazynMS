@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Controllers
@@ -10,15 +11,15 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<OrderModel>> GetOrders()
         {
-            OrderModel order = new OrderModel();
+            var orders = OrderDbC.GetOrders();
 
-            return Ok(order);
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public ActionResult<OrderModel> GetOrders(int id)
         {
-            OrderModel order = new OrderModel();
+            OrderModel order = OrderDbC.GetOrder(id);
 
             return Ok(order);
         }
