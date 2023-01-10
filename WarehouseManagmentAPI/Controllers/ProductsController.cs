@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 using WarehouseManagmentAPI.Models;
 
 namespace WarehouseManagmentAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase

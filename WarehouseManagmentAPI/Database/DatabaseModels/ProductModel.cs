@@ -1,4 +1,5 @@
-﻿using WarehouseManagmentAPI.Models;
+﻿using WarehouseManagmentAPI.Controllers.PostModels;
+using WarehouseManagmentAPI.Models;
 
 namespace WarehouseManagmentAPI.Database.DatabaseModels
 {

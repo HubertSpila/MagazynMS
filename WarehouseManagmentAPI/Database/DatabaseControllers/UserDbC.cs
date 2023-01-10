@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
@@ -29,6 +30,30 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
             return users;
+        }
+
+        public static bool IsOkUser(AuthenticationPostModel form)
+        {
+            if (form == null || form.UserName == null || form.Password == null) return false;
+
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                bool result = false;
+
+                SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = {form.UserName} AND Haslo = {form.Password}", Connection);
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                
+                while (reader.Read())
+                {
+                    result = true;
+                }
+
+                reader.Close();
+                Connection.Close();
+            }
+            //do naprawy
+            return true;
         }
     }
 }
