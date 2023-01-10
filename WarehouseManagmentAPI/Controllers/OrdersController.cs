@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
-using WarehouseManagmentAPI.Imports;
+using WarehouseManagmentAPI.Tools.Imports;
 
 namespace WarehouseManagmentAPI.Controllers
 {

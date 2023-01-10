@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
 
-namespace WarehouseManagmentAPI.Imports
+namespace WarehouseManagmentAPI.Tools.Imports
 {
     public static class BaseLinkerImport
     {
@@ -16,7 +16,7 @@ namespace WarehouseManagmentAPI.Imports
                 order_status_id = Config.status_id
             };
 
-            object parameters = (object)data;
+            object parameters = data;
 
             HttpClient httpClient = new HttpClient();
             Uri requestUri = new Uri(_apiEntryPoint);
@@ -48,7 +48,7 @@ namespace WarehouseManagmentAPI.Imports
                 if (responsePage != null)
                     return responsePage.orders;
             }
-            catch{}
+            catch { }
 
             return null;
         }
@@ -58,7 +58,7 @@ namespace WarehouseManagmentAPI.Imports
             {
                 order_id = id
             };
-            object parameters = (object)data;
+            object parameters = data;
 
             HttpClient httpClient = new HttpClient();
             Uri requestUri = new Uri(_apiEntryPoint);
@@ -82,7 +82,7 @@ namespace WarehouseManagmentAPI.Imports
             StringContent stringContent = new StringContent(content, null, "application/x-www-form-urlencoded");
             string result = httpClient.PostAsync(requestUri, stringContent).Result.Content.ReadAsStringAsync().Result;
 
-            
+
             ResponseOrder responsePage;
             try
             {
@@ -90,7 +90,7 @@ namespace WarehouseManagmentAPI.Imports
                 if (responsePage != null)
                     return responsePage.orders.First();
             }
-            catch{}
+            catch { }
 
             return null;
         }

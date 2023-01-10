@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Database.DatabaseModels;
-using WarehouseManagmentAPI.Imports;
+using WarehouseManagmentAPI.Tools.Imports;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {

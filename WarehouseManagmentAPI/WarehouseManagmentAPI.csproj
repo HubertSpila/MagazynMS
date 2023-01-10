@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Toolbars\" />
+    <Folder Include="Tools\Toolbars\" />
   </ItemGroup>
 
 </Project>
