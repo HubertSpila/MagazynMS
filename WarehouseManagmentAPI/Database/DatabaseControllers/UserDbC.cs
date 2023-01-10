@@ -36,24 +36,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             if (form == null || form.UserName == null || form.Password == null) return false;
 
+            bool result = false;
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
-                bool result = false;
-
-                SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = {form.UserName} AND Haslo = {form.Password}", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = '{form.UserName}' AND Haslo = '{form.Password}'", Connection);
                 Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
                 
-                while (reader.Read())
-                {
-                    result = true;
-                }
+                SqlDataReader reader = command.ExecuteReader();
+                result = reader.HasRows;
 
                 reader.Close();
                 Connection.Close();
             }
             //do naprawy
-            return true;
+            return result;
         }
     }
 }

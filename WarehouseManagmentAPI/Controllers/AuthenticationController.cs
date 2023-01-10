@@ -24,7 +24,7 @@ namespace WarehouseManagmentAPI.Controllers
         {
             if(!UserDbC.IsOkUser(form)) return Unauthorized();
 
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("Authentication:SecretForKey"));
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claimsForToken = new List<Claim>();
@@ -37,7 +37,6 @@ namespace WarehouseManagmentAPI.Controllers
                 DateTime.UtcNow,
                 DateTime.UtcNow.AddHours(1),
                 signingCredentials);
-
             var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
             return Ok(tokenToReturn);
