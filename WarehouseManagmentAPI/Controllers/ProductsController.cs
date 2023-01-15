@@ -29,7 +29,7 @@ namespace WarehouseManagmentAPI.Controllers
         }
 
         //-----------------------------------------------
-        [HttpDelete("{sku}")]
+        /*[HttpDelete("{sku}")]
         public ActionResult DeleteProduct(string sku)
         {
 
@@ -44,6 +44,6 @@ namespace WarehouseManagmentAPI.Controllers
             ProductModel newProduct = new ProductModel(productToAdd);
 
             return Ok(newProduct);
-        }
+        }*/
     }
 }

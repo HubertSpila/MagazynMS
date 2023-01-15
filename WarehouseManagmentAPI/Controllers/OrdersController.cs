@@ -14,7 +14,7 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<OrderModel>> GetOrders()
         {
-            var orders = OrderDbC.GetOrders();
+            List<OrderModel> orders = OrderDbC.GetOrders();
 
             return Ok(orders);
         }

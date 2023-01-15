@@ -82,7 +82,6 @@ namespace WarehouseManagmentAPI.Tools.Imports
             StringContent stringContent = new StringContent(content, null, "application/x-www-form-urlencoded");
             string result = httpClient.PostAsync(requestUri, stringContent).Result.Content.ReadAsStringAsync().Result;
 
-
             ResponseOrder responsePage;
             try
             {
