@@ -22,13 +22,15 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpPost]
         public ActionResult<string> Authenticate(AuthenticationPostModel form)
         {
+            //Sprawdzenie poprawności danych logowania
             if(!UserDbC.IsOkUser(form)) return Unauthorized();
 
+            //Wygenerowanie tokena jeśli user jest poprawny
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claimsForToken = new List<Claim>();
-            claimsForToken.Add(new Claim("sub", Config.User));
+            claimsForToken.Add(new Claim("sub", form.UserName));
 
             var jwtSecurityToken = new JwtSecurityToken(
                 _configuration["Authentication:Issuer"],
@@ -39,6 +41,7 @@ namespace WarehouseManagmentAPI.Controllers
                 signingCredentials);
             var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
+            //Zwrócenie tokena
             return Ok(tokenToReturn);
         }
     }

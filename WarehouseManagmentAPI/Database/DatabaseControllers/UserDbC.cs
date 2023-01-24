@@ -34,21 +34,30 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
         public static bool IsOkUser(AuthenticationPostModel form)
         {
-            if (form == null || form.UserName == null || form.Password == null) return false;
+            //Sprawdzanie czy wszystkie pola są wypełnione danymi
+            if (form == null || form.UserName == null || form.Password == null
+               || form.UserName == string.Empty || form.Password == string.Empty) return false;
 
             bool result = false;
+
+            //Zapytanie SQL do bazy
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = '{form.UserName}' AND Haslo = '{form.Password}'", Connection);
                 Connection.Open();
                 
                 SqlDataReader reader = command.ExecuteReader();
-                result = reader.HasRows;
+
+                while (reader.Read())
+                {
+                    if(reader[1].ToString() == form.Password) 
+                        result = true;
+                }
 
                 reader.Close();
                 Connection.Close();
             }
-            //do naprawy
+
             return result;
         }
     }
