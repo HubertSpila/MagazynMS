@@ -5,16 +5,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class CartonDbC
     {
+        //pobieranie danych z bazy do modelu CartonModel (Lista)
         public static List<CartonModel> GetCartons()
         {
             List<CartonModel> cartons = new List<CartonModel>();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Karton", Connection);
+                
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy SQL
                 while (reader.Read())
                 {
                     cartons.Add(new CartonModel()
@@ -35,16 +39,22 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             return cartons;
         }
+
+
+        //pobieranie danych z bazy do modelu CartonModel
         public static CartonModel GetCarton(string id)
         {
             CartonModel carton = new CartonModel();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Karton WHERE ID_kartonu = {id}", Connection);
+                
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszySQL
                 while (reader.Read())
                 {
                     carton = new CartonModel()

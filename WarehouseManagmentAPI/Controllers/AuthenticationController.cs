@@ -13,6 +13,7 @@ namespace WarehouseManagmentAPI.Controllers
     [Route("api/[controller]")]
     public class AuthenticationController : ControllerBase
     {
+        //Pobiera informacje z pliku appsettings.json do _configuration
         private IConfiguration _configuration { get; set; }
         public AuthenticationController(IConfiguration configuration)
         {
@@ -29,6 +30,7 @@ namespace WarehouseManagmentAPI.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            //Wpisanie do tokena UserName
             var claimsForToken = new List<Claim>();
             claimsForToken.Add(new Claim("sub", form.UserName));
 
@@ -41,7 +43,7 @@ namespace WarehouseManagmentAPI.Controllers
                 signingCredentials);
             var tokenToReturn = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
-            //Zwrócenie tokena
+            
             return Ok(tokenToReturn);
         }
     }

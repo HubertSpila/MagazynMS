@@ -2,6 +2,7 @@
 
 namespace WarehouseManagmentAPI.Models
 {
+    //Wstępne utworzenie modelu z wymaganymi polami => jeszcze nie obsługuje po stronie web
     public class ProductPostModel
     {
         [Required]

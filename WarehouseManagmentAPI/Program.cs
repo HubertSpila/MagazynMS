@@ -10,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//token jwt
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {

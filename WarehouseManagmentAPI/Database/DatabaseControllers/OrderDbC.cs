@@ -6,16 +6,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class OrderDbC
     {
+        //pobieranie danych z bazy do modelu OrderModel (Lista)
         public static List<OrderModel> GetOrders()
         {
             List<OrderModel> orders = new List<OrderModel>();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Zamowienie", Connection);
+
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     orders.Add(new OrderModel()
@@ -29,9 +33,12 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
                 reader.Close();
 
+                //Zapytanie SQL
                 SqlCommand commandPossition = new SqlCommand($"SELECT * FROM Pozycja", Connection);
+
                 SqlDataReader readerPosition = commandPossition.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (readerPosition.Read())
                 {
                     PositionModel position = new PositionModel()
@@ -55,16 +62,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             return orders;
         }
 
+        //pobieranie danych z bazy do modelu OrderModel
         public static OrderModel GetOrder(int id)
         {
             OrderModel order = new OrderModel();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Zamowienie WHERE ID_zamowienia = {id}", Connection);
+
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     order = new OrderModel()
@@ -83,6 +94,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     SqlCommand commandPossition = new SqlCommand($"SELECT * FROM Pozycja WHERE ID_zamowienia = {id}", Connection);
                     SqlDataReader readerPosition = commandPossition.ExecuteReader();
 
+                    //Odczyt wierszy z SQL
                     while (readerPosition.Read())
                     {
                         PositionModel position = new PositionModel()

@@ -11,6 +11,7 @@ namespace WarehouseManagmentAPI.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
+        //Zwraca liste zamówień
         [HttpGet]
         public ActionResult<IEnumerable<OrderModel>> GetOrders()
         {
@@ -19,6 +20,7 @@ namespace WarehouseManagmentAPI.Controllers
             return Ok(orders);
         }
 
+        //Zwraca zamówienie o podanym id
         [HttpGet("{id}")]
         public ActionResult<OrderModel> GetOrders(int id)
         {
@@ -27,6 +29,7 @@ namespace WarehouseManagmentAPI.Controllers
             return Ok(order);
         }
 
+        //Import baselinker
         [HttpGet("import")]
         public ActionResult ImportOrders()
         {
@@ -36,6 +39,7 @@ namespace WarehouseManagmentAPI.Controllers
             return Ok();
         }
 
+        //filtrowanie
         [HttpGet("filtr")]
         public ActionResult<IEnumerable<OrderModel>> FiltrOrders()
         {

@@ -10,6 +10,7 @@ namespace WarehouseManagmentAPI.Controllers
     [Route("api/[controller]")]
     public class ConfigurationsController : ControllerBase
     {
+        //Zwraca statystyki
         [HttpGet]
         public ActionResult<ConfigurationModel> GetStatistics()
         {

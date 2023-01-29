@@ -11,6 +11,7 @@ namespace WarehouseManagmentAPI.Controllers
     [Route("api/[controller]")]
     public class CartonsController : ControllerBase
     {
+        //Zwraca liste kartonów
         [HttpGet]
         public ActionResult<IEnumerable<CartonModel>> GetCartons()
         {
@@ -19,6 +20,7 @@ namespace WarehouseManagmentAPI.Controllers
             return Ok(cartons);
         }
 
+        //Zwraca karton o podanym id
         [HttpGet("{id}")]
         public ActionResult<IEnumerable<CartonModel>> GetCarton(string id)
         {

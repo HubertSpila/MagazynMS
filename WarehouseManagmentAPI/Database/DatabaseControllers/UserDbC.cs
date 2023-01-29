@@ -6,16 +6,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class UserDbC
     {
+        //pobieranie danych z bazy do modelu UserModel (Lista)
         public static List<UserModel> GetSUsers()
         {
             List<UserModel> users = new List<UserModel>();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik", Connection);
+
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     users.Add(new UserModel()
@@ -32,6 +36,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             return users;
         }
 
+        //Sprawdzanie poprawności danych do logowania
         public static bool IsOkUser(AuthenticationPostModel form)
         {
             //Sprawdzanie czy wszystkie pola są wypełnione danymi
@@ -40,14 +45,15 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             bool result = false;
 
-            //Zapytanie SQL do bazy
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = '{form.UserName}' AND Haslo = '{form.Password}'", Connection);
                 Connection.Open();
                 
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     if(reader[1].ToString() == form.Password) 

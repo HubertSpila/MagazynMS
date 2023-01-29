@@ -5,6 +5,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
     public static class ProductDbC
     {
+        //pobieranie danych z bazy do modelu ProductModel (Lista)
         public static List<ProductModel> GetProducts()
         {
             List<ProductModel> products = new List<ProductModel>();
@@ -15,6 +16,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     products.Add(new ProductModel()
@@ -33,16 +35,21 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             return products;
         }
+
+        //pobieranie danych z bazy do modelu ProductModel
         public static ProductModel GetProduct(string sku)
         {
             ProductModel product = new ProductModel();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE SKU = {sku}", Connection);
+
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     product = new ProductModel()
@@ -62,16 +69,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             return product;
         }
 
+        //pobieranie danych z bazy do modelu ProductModel (Lista) pobiera tylko dostępne produkty
         public static List<ProductModel> GetAvailableProducts()
         {
             List<ProductModel> products = new List<ProductModel>();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
+                //Zapytanie SQL
                 SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE Stan_magazynu > 0", Connection);
+
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
                     products.Add(new ProductModel()
