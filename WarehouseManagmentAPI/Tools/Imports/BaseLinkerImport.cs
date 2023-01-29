@@ -5,6 +5,7 @@ using System.Net.Http;
 
 namespace WarehouseManagmentAPI.Tools.Imports
 {
+    //Importowanie zamówień z baselinkera
     public static class BaseLinkerImport
     {
         private static string _apiEntryPoint = @"https://api.baselinker.com/connector.php";

@@ -12,7 +12,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
-                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Towar", Connection);
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -44,7 +44,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE SKU = {sku}", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE SKU = '{sku}'", Connection);
 
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -77,7 +77,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE Stan_magazynu > 0", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE Stan_magazynowy > 0", Connection);
 
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();

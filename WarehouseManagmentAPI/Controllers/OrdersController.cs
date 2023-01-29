@@ -33,7 +33,7 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet("import")]
         public ActionResult ImportOrders()
         {
-            OrderDbC.DeleteOrders();
+            //OrderDbC.DeleteOrders();
             OrderDbC.AddOrders();
 
             return Ok();

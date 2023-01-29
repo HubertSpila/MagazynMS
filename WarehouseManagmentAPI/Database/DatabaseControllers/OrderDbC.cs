@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Collections.Specialized;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 using WarehouseManagmentAPI.Tools.Imports;
 
@@ -116,23 +117,24 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             return order;
         }
 
+        //Usuwa zamówienia o innym statusie
         public static void DeleteOrders()
         {
             List<OrderModel> orders = GetOrders();
 
             foreach (var order in orders)
             {
-                if (BaseLinkerImport.OrderImport(order.ID_zamowienia).order_status_id != Config.status_id)
+                if (BaseLinkerImport.OrderImport(order.ID_zamowienia)?.order_status_id != Config.status_id)
                 {
                     using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                     {
-                        SqlCommand command = new SqlCommand($"DELLETE FROM Zamowienie WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
+                        SqlCommand command = new SqlCommand($"DELETE FROM Zamowienie WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
                         Connection.Open();
 
                         SqlDataReader reader = command.ExecuteReader();
                         reader.Close();
 
-                        SqlCommand commandPossition = new SqlCommand($"DELLETE FROM Pozycja WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
+                        SqlCommand commandPossition = new SqlCommand($"DELETE FROM Pozycja WHERE ID_zamowienia = {order.ID_zamowienia}", Connection);
 
                         SqlDataReader readerPosition = commandPossition.ExecuteReader();
                         readerPosition.Close();
@@ -143,6 +145,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
         }
 
+        //Dodaje zamówienie z basellinkera o konkretnym statusie
         public static void AddOrders()
         {
             List<OrderModel> orders = GetOrders();
@@ -150,18 +153,21 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             
             foreach (var order in baseLinkerOrders)
             {
+                if (IsExist(order.order_id)) continue;
+
                 if (!orders.Where(x=>x.ID_zamowienia == order.order_id).Any())
                 {
                     using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                     {
-                        SqlCommand command = new SqlCommand($"INSERT INTO Zamowienie (ID_zamowienia, Czy_na_stanie) VALUES ({order.order_id}, {IsAvailable(order)})", Connection);
-                        if(order.products.Count == 1)
+                        SqlCommand command = new SqlCommand($"INSERT INTO Zamowienie (ID_zamowienia, Czy_na_stanie, ID_kartonu) VALUES ({order.order_id}, {IsAvailable(order)}, 1)", Connection);
+                        
+                        /*if(order.products.Count == 1)
                         {
                             var product = ProductDbC.GetProduct(order.products.First().sku);
-                            
+
                             if(product != null)
                                 command = new SqlCommand($"INSERT INTO Zamowienie (ID_zamowienia, ID_kartonu, Czy_na_stanie) VALUES ({order.order_id}, {product.ID_kartonu}, {IsAvailable(order)})", Connection);
-                        }
+                        }*/
 
                         Connection.Open();
 
@@ -170,7 +176,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
                         foreach (var product in order.products)
                         {
-                            SqlCommand commandProduct = new SqlCommand($"INSERT INTO Pozycja (SKU, Ilosc, ID_zamowienia) VALUES ({product.sku}, {product.quantity}, {order.order_id})", Connection);
+                            SqlCommand commandProduct = new SqlCommand($"INSERT INTO Pozycja (SKU, Ilosc, ID_zamowienia) VALUES ('{product.sku}', {product.quantity}, '{order.order_id}')", Connection);
                             SqlDataReader readerProduct = commandProduct.ExecuteReader();
                             readerProduct.Close();
                         }
@@ -181,13 +187,23 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
         }
 
-        public static bool IsAvailable(ResponsePage order)
+        public static int IsAvailable(ResponsePage order)
         {
             var products = ProductDbC.GetAvailableProducts();
             
-            return order.products.Where(x=> products
+            var result = order.products.Where(x=> products
                                     .Where(y=>y.SKU == x.sku).Any())
                                 .Any();
+            if (result) return 1;
+
+            return 0;
+        }
+
+        public static bool IsExist(int id)
+        {
+            var result = GetOrder(id);
+
+            return result != null;
         }
     }
 }
