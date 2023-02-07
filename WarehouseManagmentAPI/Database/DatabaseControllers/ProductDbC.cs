@@ -12,7 +12,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
-                SqlCommand command = new SqlCommand($"SELECT * FROM Towar", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt", Connection);
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
