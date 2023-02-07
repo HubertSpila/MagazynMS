@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
@@ -42,7 +43,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
 
         //pobieranie danych z bazy do modelu CartonModel
-        public static CartonModel GetCarton(string id)
+        public static CartonModel GetCarton(int id)
         {
             CartonModel carton = new CartonModel();
 
@@ -74,6 +75,53 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
             return carton;
+        }
+
+        public static void UpdateCarton(ChangeCartonQuantityPostModel form)
+        {
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                //Zapytanie SQL
+                SqlCommand command = new SqlCommand($"UPDATE Karton SET Stan_magazynowy = {form.ilosc} WHERE ID_kartonu = {form.id}; ", Connection);
+
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+                Connection.Close();
+            }
+
+        }
+        public static void AddCarton(AddCartonPostModels form)
+        {
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                //Zapytanie SQL
+                SqlCommand command = new SqlCommand($"INSERT INTO Karton VALUES ({form.ID_kartonu}, {form.Wysokosc}, {form.Szerokosc}, {form.Glebokosc}, {form.Stan_magazynowy}, 0); ", Connection);
+
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+                Connection.Close();
+            }
+
+        }
+
+        public static void DeleteCarton(int ID_kartonu)
+        {
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                //Zapytanie SQL
+                SqlCommand command = new SqlCommand($"DELETE FROM Karton WHERE ID_kartonu = {ID_kartonu}; ", Connection);
+
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+                Connection.Close();
+            }
+
         }
     }
 }
