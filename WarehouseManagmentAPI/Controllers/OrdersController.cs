@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
-using WarehouseManagmentAPI.Tools.Imports;
 
 namespace WarehouseManagmentAPI.Controllers
 {
@@ -27,16 +26,6 @@ namespace WarehouseManagmentAPI.Controllers
             OrderModel order = OrderDbC.GetOrder(id);
 
             return Ok(order);
-        }
-
-        //Import baselinker
-        [HttpGet("import")]
-        public ActionResult ImportOrders()
-        {
-            //OrderDbC.DeleteOrders();
-            OrderDbC.AddOrders();
-
-            return Ok();
         }
 
         //filtrowanie

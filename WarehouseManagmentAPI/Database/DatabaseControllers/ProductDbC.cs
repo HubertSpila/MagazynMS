@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
@@ -9,6 +10,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         public static List<ProductModel> GetProducts()
         {
             List<ProductModel> products = new List<ProductModel>();
+            List<CartonModel>? cartons = CartonDbC.GetCartons();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
@@ -23,7 +25,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     {
                         SKU = reader[0].ToString(),
                         Nazwa_produktu = reader[1].ToString(),
-                        ID_kartonu = (int)reader[2],
+                        Karton = cartons.Where(x=>x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
                         Stan_magazynowy = (int)reader[3],
                         Potrzebna_ilosc = (int)reader[4]
                     });
@@ -44,7 +46,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE SKU = '{sku}'", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE SKU = '{sku}'", Connection);
 
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -56,7 +58,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     {
                         SKU = reader[0].ToString(),
                         Nazwa_produktu = reader[1].ToString(),
-                        ID_kartonu = (int)reader[2],
+                        Karton = CartonDbC.GetCarton((int)reader[2]),
                         Stan_magazynowy = (int)reader[3],
                         Potrzebna_ilosc = (int)reader[4]
                     };
@@ -73,11 +75,12 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         public static List<ProductModel> GetAvailableProducts()
         {
             List<ProductModel> products = new List<ProductModel>();
+            List<CartonModel>? cartons = CartonDbC.GetCartons();
 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Towar WHERE Stan_magazynowy > 0", Connection);
+                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE Stan_magazynowy > 0", Connection);
 
                 Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -89,7 +92,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     {
                         SKU = reader[0].ToString(),
                         Nazwa_produktu = reader[1].ToString(),
-                        ID_kartonu = (int)reader[2],
+                        Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
                         Stan_magazynowy = (int)reader[3],
                         Potrzebna_ilosc = (int)reader[4]
                     });
@@ -100,6 +103,21 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
             return products;
+        }
+        public static void AddProduct(AddProductPostModel form)
+        {
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                //Zapytanie SQL
+                SqlCommand command = new SqlCommand($"INSERT INTO Produkt VALUES ('{form.SKU}', '{form.Nazwa_produktu}', {form.ID_kartonu}, {form.Stan_magazynowy}, {form.Potrzebna_ilosc}); ", Connection);
+
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+                Connection.Close();
+            }
+
         }
     }
 }
