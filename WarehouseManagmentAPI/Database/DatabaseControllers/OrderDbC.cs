@@ -22,13 +22,18 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                 //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
-                    orders.Add(new OrderModel()
-                    {
-                        ID_zamowienia = (int)reader[0],
-                        ID_kartonu = (int)reader[1],
-                        Czy_na_stanie = reader[2].ToString() != "0",
-                        Pozycje = new List<PositionModel>()
-                    });
+                    OrderModel order = new OrderModel();
+
+                    order.ID_zamowienia = (int)reader[0];
+                    order.ID_kartonu = (int)reader[1];
+                    order.Czy_na_stanie = reader[2].ToString() != "0";
+
+                    try { order.ID_kartonu2 = (int)reader[3]; }
+                    catch { order.ID_kartonu2 = null; }
+                    
+                    order.Pozycje = new List<PositionModel>();
+
+                    orders.Add(order);
                 }
 
                 reader.Close();
@@ -78,13 +83,14 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                 //Odczyt wierszy z SQL
                 while (reader.Read())
                 {
-                    order = new OrderModel()
-                    {
-                        ID_zamowienia = (int)reader[0],
-                        ID_kartonu = (int)reader[1],
-                        Czy_na_stanie = reader[2].ToString() == "0",
-                        Pozycje = new List<PositionModel>()
-                    };
+                    order.ID_zamowienia = (int)reader[0];
+                    order.ID_kartonu = (int)reader[1];
+                    order.Czy_na_stanie = reader[2].ToString() != "0";
+
+                    try { order.ID_kartonu2 = (int)reader[3]; }
+                    catch { order.ID_kartonu2 = null; }
+                    
+                    order.Pozycje = new List<PositionModel>();
                 }
 
                 reader.Close();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Controllers
 {
@@ -16,6 +17,7 @@ namespace WarehouseManagmentAPI.Controllers
         public ActionResult<IEnumerable<CartonModel>> GetCartons()
         {
             var cartons = CartonDbC.GetCartons();
+            cartons = CountingTools.EntryNeededQuantity(cartons);
 
             return Ok(cartons);
         }

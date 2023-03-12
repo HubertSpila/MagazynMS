@@ -29,7 +29,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                         Szerokosc = (int)reader[2],
                         Glebokosc = (int)reader[3],
                         Stan_magazynowy = (int)reader[4],
-                        Potrzebna_ilosc = (int)reader[5],
+                        //Potrzebna_ilosc = (int)reader[5],
 
                     });
                 }
