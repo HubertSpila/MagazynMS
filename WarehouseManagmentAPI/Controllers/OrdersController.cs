@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Controllers
 {
@@ -32,10 +33,46 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet("filtr")]
         public ActionResult<IEnumerable<OrderModel>> FiltrOrders()
         {
-            var orders = OrderDbC.GetOrders().Where(x=>x.Pozycje
-                                               .Where(y=>y.Ilosc>1).Any());
+            var orders = OrderDbC.GetOrders().Where(x => x.Pozycje
+                                               .Where(y => y.Ilosc > 1).Any());
 
             return Ok(orders);
+        }
+
+        //import
+        [HttpGet("import")]
+        public ActionResult<string> ImportOrders()
+        {
+            string path = @"C:\Users\Hubert\Desktop\imports";
+            string[] files = Directory.GetFiles(path, "*.csv");
+
+            OrderDbC.ClearOrders();
+            List<OrderModel> list = new List<OrderModel>();
+
+            foreach (string file in files)
+            {
+                using (StreamReader reader = new StreamReader(file))
+                {
+                    string line;
+
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (line == string.Empty) continue;
+                        if (line.ToLower().Contains("\"status\"")) continue;
+
+                        var order = CsvParser.ReturnOrder(line);
+                        if (order != null)
+                        {
+                            list.Add(order);
+                        }
+                    }
+                }
+            }
+
+            if (list.Any())
+                OrderDbC.AddOrders(list);
+
+            return Ok();
         }
     }
 }

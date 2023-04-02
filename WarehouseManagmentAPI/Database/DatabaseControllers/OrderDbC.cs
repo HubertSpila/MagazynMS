@@ -122,5 +122,67 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             return order;
         }
 
+        // czyszczenie zamówień
+        public static bool ClearOrders()
+        {
+            try
+            {
+
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    string deletePozycjaQuery = "DELETE FROM Pozycja";
+                    string deleteZamowienieQuery = "DELETE FROM Zamowienie";
+
+                    SqlCommand deletePozycjaCommand = new SqlCommand(deletePozycjaQuery, Connection);
+                    SqlCommand deleteZamowienieCommand = new SqlCommand(deleteZamowienieQuery, Connection);
+
+                    Connection.Open();
+
+                    deletePozycjaCommand.ExecuteNonQuery();
+                    deleteZamowienieCommand.ExecuteNonQuery();
+
+                    Connection.Close();
+                }
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool AddOrders(List<OrderModel> list)
+        {
+            try
+            {
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    Connection.Open();
+                    foreach (var order in list)
+                    {
+                        string addOrderQuery = $"INSERT INTO Zamowienie VALUES({order.ID_zamowienia},{order.ID_kartonu}, {(order.Czy_na_stanie? 1 : 0)},NULL)";
+                        SqlCommand addOrderCommand = new SqlCommand(addOrderQuery, Connection);
+                        addOrderCommand.ExecuteNonQuery();
+
+                        foreach (var pozycja in order.Pozycje)
+                        {
+                            string addPozycjaQuery = $"INSERT INTO Pozycja VALUES({pozycja.SKU},{pozycja.Ilosc},{order.ID_zamowienia},{(pozycja.Czy_na_stanie ? 1 : 0)})";
+                            SqlCommand addPozycjaCommand = new SqlCommand(addPozycjaQuery, Connection);
+                            addPozycjaCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
