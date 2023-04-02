@@ -7,7 +7,7 @@ namespace WarehouseManagmentAPI.Tools
     {
         public static List<CartonModel> EntryNeededQuantity(List<CartonModel> cartons)
         {
-            var orders = OrderDbC.GetOrders();
+            var orders = OrderDbC.GetOrders().Where(x=>x.ID_kartonu !=0);
             var groups = orders.GroupBy(x => x.ID_kartonu);
 
             foreach (var group in groups)
@@ -21,6 +21,21 @@ namespace WarehouseManagmentAPI.Tools
             }
 
             return cartons;
+        }
+
+        public static List<ProductModel> EntryNeededQuantity(List<ProductModel> products)
+        {
+            var positions = OrderDbC.GetOrders().SelectMany(x=>x.Pozycje);
+            var groups = positions.GroupBy(x => x.SKU);
+
+            foreach (var group in groups)
+            {
+                if (!products.Any(x => x.SKU == group.Key)) continue;
+
+                products.First(x => x.SKU == group.Key).Potrzebna_ilosc = group.Sum(x=>x.Ilosc);
+            }
+
+            return products;
         }
     }
 }

@@ -119,5 +119,20 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
         }
+        public static void UpdateProduct(ChangeProductQuantityPostModel form)
+        {
+            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            {
+                //Zapytanie SQL
+                SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}'; ", Connection);
+
+                Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+                Connection.Close();
+            }
+
+        }
     }
 }

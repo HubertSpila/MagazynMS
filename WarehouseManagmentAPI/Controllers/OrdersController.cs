@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseControllers;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 using WarehouseManagmentAPI.Tools;
@@ -43,7 +44,7 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet("import")]
         public ActionResult<string> ImportOrders()
         {
-            string path = @"C:\Users\Hubert\Desktop\imports";
+            string path = @"C:\Users\Hubert\Desktop\Praca inżynierska\import";
             string[] files = Directory.GetFiles(path, "*.csv");
 
             OrderDbC.ClearOrders();
@@ -60,18 +61,28 @@ namespace WarehouseManagmentAPI.Controllers
                         if (line == string.Empty) continue;
                         if (line.ToLower().Contains("\"status\"")) continue;
 
-                        var order = CsvParser.ReturnOrder(line);
-                        if (order != null)
+                        var order = ImportTools.ReturnOrder(line);
+                        if (order != null && !list.Any(x=>x.ID_zamowienia == order.ID_zamowienia))
                         {
                             list.Add(order);
                         }
                     }
                 }
+
+                //Tworzenie archiwum
             }
 
             if (list.Any())
-                OrderDbC.AddOrders(list);
+            {
+                OrderDbC.AddOrders(ImportTools.PoprawDane(list));
+            }
 
+            return Ok();
+        }
+        [HttpPut("update")]
+        public ActionResult<string> UpdateCarton(UpdateCartonOrderPostModel form)
+        {
+            OrderDbC.UpdateCarton(form);
             return Ok();
         }
     }

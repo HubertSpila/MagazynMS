@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Collections.Specialized;
+using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
@@ -162,13 +163,13 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     Connection.Open();
                     foreach (var order in list)
                     {
-                        string addOrderQuery = $"INSERT INTO Zamowienie VALUES({order.ID_zamowienia},{order.ID_kartonu}, {(order.Czy_na_stanie? 1 : 0)},NULL)";
+                        string addOrderQuery = $"INSERT INTO Zamowienie VALUES({order.ID_zamowienia},{order.ID_kartonu}, {(order.Pozycje.Any(x=>x.Czy_na_stanie == true)? 1: 0)},NULL)";
                         SqlCommand addOrderCommand = new SqlCommand(addOrderQuery, Connection);
                         addOrderCommand.ExecuteNonQuery();
 
                         foreach (var pozycja in order.Pozycje)
                         {
-                            string addPozycjaQuery = $"INSERT INTO Pozycja VALUES({pozycja.SKU},{pozycja.Ilosc},{order.ID_zamowienia},{(pozycja.Czy_na_stanie ? 1 : 0)})";
+                            string addPozycjaQuery = $"INSERT INTO Pozycja VALUES('{pozycja.SKU}',{pozycja.Ilosc},{order.ID_zamowienia},{(pozycja.Czy_na_stanie ? 1 : 0)})";
                             SqlCommand addPozycjaCommand = new SqlCommand(addPozycjaQuery, Connection);
                             addPozycjaCommand.ExecuteNonQuery();
                         }
@@ -184,5 +185,31 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             return true;
         }
+        public static bool UpdateCarton(UpdateCartonOrderPostModel form)
+        {
+            try
+            {
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    string query = $"UPDATE Zamowienie SET ID_kartonu = {form.id_kartonu} WHERE ID_zamowienia = {form.id_zamowienia}; ";
+
+                    SqlCommand command = new SqlCommand(query, Connection);
+
+                    Connection.Open();
+
+                    command.ExecuteNonQuery();
+
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
