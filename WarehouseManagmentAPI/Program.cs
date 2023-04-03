@@ -1,5 +1,6 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WarehouseManagmentAPI.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +27,8 @@ builder.Services.AddAuthentication("Bearer")
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
         };
     });
-                
 
+NLogConfig.InitLog();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

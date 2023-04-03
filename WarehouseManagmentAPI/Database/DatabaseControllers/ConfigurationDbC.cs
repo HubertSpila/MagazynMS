@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -11,6 +12,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             ConfigurationModel configuration = new ConfigurationModel();
 
+            try { 
             using (SqlConnection Connection = new SqlConnection(Config._connectionString))
             {
                 //Zapytanie SQL
@@ -27,6 +29,11 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
                 reader.Close();
                 Connection.Close();
+            }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return configuration;

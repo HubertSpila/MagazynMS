@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -11,28 +12,34 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             List<ProductModel> products = new List<ProductModel>();
             List<CartonModel>? cartons = CartonDbC.GetCartons();
-
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt", Connection);
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    products.Add(new ProductModel()
-                    {
-                        SKU = reader[0].ToString(),
-                        Nazwa_produktu = reader[1].ToString(),
-                        Karton = cartons.Where(x=>x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
-                        Stan_magazynowy = (int)reader[3],
-                        Potrzebna_ilosc = (int)reader[4]
-                    });
-                }
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Produkt", Connection);
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        products.Add(new ProductModel()
+                        {
+                            SKU = reader[0].ToString(),
+                            Nazwa_produktu = reader[1].ToString(),
+                            Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
+                            Stan_magazynowy = (int)reader[3],
+                            Potrzebna_ilosc = (int)reader[4]
+                        });
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return products;
@@ -42,30 +49,36 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         public static ProductModel GetProduct(string sku)
         {
             ProductModel product = new ProductModel();
-
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE SKU = '{sku}'", Connection);
-
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    product = new ProductModel()
-                    {
-                        SKU = reader[0].ToString(),
-                        Nazwa_produktu = reader[1].ToString(),
-                        Karton = CartonDbC.GetCarton((int)reader[2]),
-                        Stan_magazynowy = (int)reader[3],
-                        Potrzebna_ilosc = (int)reader[4]
-                    };
-                }
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE SKU = '{sku}'", Connection);
 
-                reader.Close();
-                Connection.Close();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        product = new ProductModel()
+                        {
+                            SKU = reader[0].ToString(),
+                            Nazwa_produktu = reader[1].ToString(),
+                            Karton = CartonDbC.GetCarton((int)reader[2]),
+                            Stan_magazynowy = (int)reader[3],
+                            Potrzebna_ilosc = (int)reader[4]
+                        };
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return product;
@@ -76,61 +89,82 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             List<ProductModel> products = new List<ProductModel>();
             List<CartonModel>? cartons = CartonDbC.GetCartons();
-
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE Stan_magazynowy > 0", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    products.Add(new ProductModel()
-                    {
-                        SKU = reader[0].ToString(),
-                        Nazwa_produktu = reader[1].ToString(),
-                        Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
-                        Stan_magazynowy = (int)reader[3],
-                        Potrzebna_ilosc = (int)reader[4]
-                    });
-                }
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Produkt WHERE Stan_magazynowy > 0", Connection);
 
-                reader.Close();
-                Connection.Close();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        products.Add(new ProductModel()
+                        {
+                            SKU = reader[0].ToString(),
+                            Nazwa_produktu = reader[1].ToString(),
+                            Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
+                            Stan_magazynowy = (int)reader[3],
+                            Potrzebna_ilosc = (int)reader[4]
+                        });
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return products;
         }
         public static void AddProduct(AddProductPostModel form)
         {
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"INSERT INTO Produkt VALUES ('{form.SKU}', '{form.Nazwa_produktu}', {form.ID_kartonu}, {form.Stan_magazynowy}, {form.Potrzebna_ilosc}); ", Connection);
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"INSERT INTO Produkt VALUES ('{form.SKU}', '{form.Nazwa_produktu}', {form.ID_kartonu}, {form.Stan_magazynowy}, {form.Potrzebna_ilosc}); ", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
         }
         public static void UpdateProduct(ChangeProductQuantityPostModel form)
         {
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}'; ", Connection);
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}'; ", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
         }

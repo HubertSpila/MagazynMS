@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -9,29 +10,36 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         public static List<StatisticModel> GetStatistics()
         {
             List<StatisticModel> statistics = new List<StatisticModel>();
-
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Statystyki", Connection);
-
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    statistics.Add(new StatisticModel()
-                    {
-                        Data_sprzedazy = (DateTime)reader[0],
-                        Ilosc = (int)reader[1],
-                        SKU = reader[2].ToString()
-                    });
-                }
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Statystyki", Connection);
 
-                reader.Close();
-                Connection.Close();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        statistics.Add(new StatisticModel()
+                        {
+                            Data_sprzedazy = (DateTime)reader[0],
+                            Ilosc = (int)reader[1],
+                            SKU = reader[2].ToString()
+                        });
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
             }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
+
 
             return statistics;
         }

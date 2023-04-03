@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -10,27 +11,33 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         public static List<UserModel> GetSUsers()
         {
             List<UserModel> users = new List<UserModel>();
-
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik", Connection);
-
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    users.Add(new UserModel()
-                    {
-                        Nazwa_uzytkownika = reader[0].ToString(),
-                        Haslo = reader[1].ToString()
-                    });
-                }
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik", Connection);
 
-                reader.Close();
-                Connection.Close();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        users.Add(new UserModel()
+                        {
+                            Nazwa_uzytkownika = reader[0].ToString(),
+                            Haslo = reader[1].ToString()
+                        });
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return users;
@@ -45,23 +52,30 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             bool result = false;
 
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = '{form.UserName}' AND Haslo = '{form.Password}'", Connection);
-                Connection.Open();
-                
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy z SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    if(reader[1].ToString() == form.Password) 
-                        result = true;
-                }
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Uzytkownik WHERE Nazwa_uzytkownika = '{form.UserName}' AND Haslo = '{form.Password}'", Connection);
+                    Connection.Open();
 
-                reader.Close();
-                Connection.Close();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy z SQL
+                    while (reader.Read())
+                    {
+                        if (reader[1].ToString() == form.Password)
+                            result = true;
+                    }
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return result;

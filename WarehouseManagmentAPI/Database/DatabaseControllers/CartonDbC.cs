@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using WarehouseManagmentAPI.Controllers.PostModels;
 using WarehouseManagmentAPI.Database.DatabaseModels;
+using WarehouseManagmentAPI.Tools;
 
 namespace WarehouseManagmentAPI.Database.DatabaseControllers
 {
@@ -11,31 +12,38 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             List<CartonModel> cartons = new List<CartonModel>();
 
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Karton", Connection);
-                
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszy SQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    cartons.Add(new CartonModel()
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Karton", Connection);
+
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszy SQL
+                    while (reader.Read())
                     {
-                        ID_kartonu = (int)reader[0],
-                        Wysokosc = (int)reader[1],
-                        Szerokosc = (int)reader[2],
-                        Glebokosc = (int)reader[3],
-                        Stan_magazynowy = (int)reader[4],
-                        //Potrzebna_ilosc = (int)reader[5],
+                        cartons.Add(new CartonModel()
+                        {
+                            ID_kartonu = (int)reader[0],
+                            Wysokosc = (int)reader[1],
+                            Szerokosc = (int)reader[2],
+                            Glebokosc = (int)reader[3],
+                            Stan_magazynowy = (int)reader[4],
+                            //Potrzebna_ilosc = (int)reader[5],
 
-                    });
+                        });
+                    }
+
+                    reader.Close();
+                    Connection.Close();
                 }
-
-                reader.Close();
-                Connection.Close();
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
             return cartons;
@@ -47,81 +55,106 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
         {
             CartonModel carton = new CartonModel();
 
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"SELECT * FROM Karton WHERE ID_kartonu = {id}", Connection);
-                
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Odczyt wierszySQL
-                while (reader.Read())
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
-                    carton = new CartonModel()
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"SELECT * FROM Karton WHERE ID_kartonu = {id}", Connection);
+
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    //Odczyt wierszySQL
+                    while (reader.Read())
                     {
-                        ID_kartonu = (int)reader[0],
-                        Wysokosc = (int)reader[1],
-                        Szerokosc = (int)reader[2],
-                        Glebokosc = (int)reader[3],
-                        Stan_magazynowy = (int)reader[4],
-                        Potrzebna_ilosc = (int)reader[5],
+                        carton = new CartonModel()
+                        {
+                            ID_kartonu = (int)reader[0],
+                            Wysokosc = (int)reader[1],
+                            Szerokosc = (int)reader[2],
+                            Glebokosc = (int)reader[3],
+                            Stan_magazynowy = (int)reader[4],
+                            Potrzebna_ilosc = (int)reader[5],
 
-                    };
+                        };
+                    }
+
+                    reader.Close();
+                    Connection.Close();
                 }
-
-                reader.Close();
-                Connection.Close();
             }
-
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
             return carton;
         }
 
         public static void UpdateCarton(ChangeCartonQuantityPostModel form)
         {
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"UPDATE Karton SET Stan_magazynowy = {form.ilosc} WHERE ID_kartonu = {form.id}; ", Connection);
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"UPDATE Karton SET Stan_magazynowy = {form.ilosc} WHERE ID_kartonu = {form.id}; ", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
             }
 
         }
         public static void AddCarton(AddCartonPostModels form)
         {
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"INSERT INTO Karton VALUES ({form.ID_kartonu}, {form.Wysokosc}, {form.Szerokosc}, {form.Glebokosc}, {form.Stan_magazynowy}, 0); ", Connection);
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"INSERT INTO Karton VALUES ({form.ID_kartonu}, {form.Wysokosc}, {form.Szerokosc}, {form.Glebokosc}, {form.Stan_magazynowy}, 0); ", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    reader.Close();
+                    Connection.Close();
+                }
             }
-
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
         }
 
         public static void DeleteCarton(int ID_kartonu)
         {
-            using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+            try
             {
-                //Zapytanie SQL
-                SqlCommand command = new SqlCommand($"DELETE FROM Karton WHERE ID_kartonu = {ID_kartonu}; ", Connection);
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"DELETE FROM Karton WHERE ID_kartonu = {ID_kartonu}; ", Connection);
 
-                Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
-                Connection.Close();
+                    reader.Close();
+                    Connection.Close();
+                }
             }
-
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
         }
     }
 }
