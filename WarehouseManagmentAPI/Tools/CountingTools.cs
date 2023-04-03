@@ -7,34 +7,48 @@ namespace WarehouseManagmentAPI.Tools
     {
         public static List<CartonModel> EntryNeededQuantity(List<CartonModel> cartons)
         {
-            var orders = OrderDbC.GetOrders().Where(x=>x.ID_kartonu !=0);
-            var groups = orders.GroupBy(x => x.ID_kartonu);
-
-            foreach (var group in groups)
+            try
             {
-                cartons.First(x => x.ID_kartonu == group.Key).Potrzebna_ilosc = group.Count();    
-            }
+                var orders = OrderDbC.GetOrders().Where(x => x.ID_kartonu != 0);
+                var groups = orders.GroupBy(x => x.ID_kartonu);
 
-            foreach (OrderModel order in orders.Where(x=>x.ID_kartonu2 != null))
+                foreach (var group in groups)
+                {
+                    cartons.First(x => x.ID_kartonu == group.Key).Potrzebna_ilosc = group.Count();
+                }
+
+                foreach (OrderModel order in orders.Where(x => x.ID_kartonu2 != null))
+                {
+                    cartons.First(x => x.ID_kartonu == order.ID_kartonu2).Potrzebna_ilosc += 1;
+                }
+            }
+            catch (Exception ex)
             {
-                cartons.First(x => x.ID_kartonu == order.ID_kartonu2).Potrzebna_ilosc += 1;
+                NLogConfig.WriteLog(ex.ToString());
             }
-
+            
             return cartons;
         }
 
         public static List<ProductModel> EntryNeededQuantity(List<ProductModel> products)
         {
-            var positions = OrderDbC.GetOrders().SelectMany(x=>x.Pozycje);
-            var groups = positions.GroupBy(x => x.SKU);
-
-            foreach (var group in groups)
+            try
             {
-                if (!products.Any(x => x.SKU == group.Key)) continue;
+                var positions = OrderDbC.GetOrders().SelectMany(x => x.Pozycje);
+                var groups = positions.GroupBy(x => x.SKU);
 
-                products.First(x => x.SKU == group.Key).Potrzebna_ilosc = group.Sum(x=>x.Ilosc);
+                foreach (var group in groups)
+                {
+                    if (!products.Any(x => x.SKU == group.Key)) continue;
+
+                    products.First(x => x.SKU == group.Key).Potrzebna_ilosc = group.Sum(x => x.Ilosc);
+                }
             }
-
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
+            
             return products;
         }
     }

@@ -48,6 +48,7 @@ namespace WarehouseManagmentAPI.Tools
             }
             catch (Exception ex)
             {
+                NLogConfig.WriteLog(ex.ToString());
                 return null;
             }
 
@@ -56,19 +57,26 @@ namespace WarehouseManagmentAPI.Tools
 
         public static List<OrderModel> PoprawDane(List<OrderModel> list)
         {
-            foreach (var order in list)
+            try
             {
-                if(order.Pozycje.Count() > 1)
+                foreach (var order in list)
                 {
-                    order.ID_kartonu = 0;
-                }
+                    if (order.Pozycje.Count() > 1)
+                    {
+                        order.ID_kartonu = 0;
+                    }
 
-                else if (order.Pozycje.Count() == 1 && order.Pozycje.First().Ilosc > 2)
-                {
-                    order.ID_kartonu = 0;
+                    else if (order.Pozycje.Count() == 1 && order.Pozycje.First().Ilosc > 2)
+                    {
+                        order.ID_kartonu = 0;
+                    }
                 }
             }
-            
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
+
             return list;
         }
 
@@ -77,25 +85,32 @@ namespace WarehouseManagmentAPI.Tools
             List<OrderModel> orders = OrderDbC.GetOrders();
             int zmiana = 0;
 
-            foreach (var order in orders)
+            try
             {
-                if (!order.Pozycje.Any(x => x.SKU == sku)) continue;
-
-                foreach (var pozycja in order.Pozycje)
+                foreach (var order in orders)
                 {
-                    if (pozycja.SKU != sku) continue;
+                    if (!order.Pozycje.Any(x => x.SKU == sku)) continue;
 
-                    zmiana++;
+                    foreach (var pozycja in order.Pozycje)
+                    {
+                        if (pozycja.SKU != sku) continue;
 
-                    if (ilosc == 0) pozycja.Czy_na_stanie = false;
-                    else pozycja.Czy_na_stanie = true;
+                        zmiana++;
+
+                        if (ilosc == 0) pozycja.Czy_na_stanie = false;
+                        else pozycja.Czy_na_stanie = true;
+                    }
+                }
+
+                if (zmiana != 0)
+                {
+                    OrderDbC.ClearOrders();
+                    OrderDbC.AddOrders(orders);
                 }
             }
-
-            if(zmiana != 0)
+            catch (Exception ex)
             {
-                OrderDbC.ClearOrders();
-                OrderDbC.AddOrders(orders);
+                NLogConfig.WriteLog(ex.ToString());
             }
         }
     }

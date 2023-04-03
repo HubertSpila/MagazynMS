@@ -44,39 +44,46 @@ namespace WarehouseManagmentAPI.Controllers
         [HttpGet("import")]
         public ActionResult<string> ImportOrders()
         {
-            string path = @"C:\Users\Hubert\Desktop\Praca inżynierska\import";
-            string[] files = Directory.GetFiles(path, "*.csv");
-
-            OrderDbC.ClearOrders();
-            List<OrderModel> list = new List<OrderModel>();
-
-            foreach (string file in files)
+            try
             {
-                using (StreamReader reader = new StreamReader(file))
+                string path = @"C:\Users\Hubert\Desktop\Praca inżynierska\import";
+                string[] files = Directory.GetFiles(path, "*.csv");
+
+                OrderDbC.ClearOrders();
+                List<OrderModel> list = new List<OrderModel>();
+
+                foreach (string file in files)
                 {
-                    string line;
-
-                    while ((line = reader.ReadLine()) != null)
+                    using (StreamReader reader = new StreamReader(file))
                     {
-                        if (line == string.Empty) continue;
-                        if (line.ToLower().Contains("\"status\"")) continue;
+                        string line;
 
-                        var order = ImportTools.ReturnOrder(line);
-                        if (order != null && !list.Any(x=>x.ID_zamowienia == order.ID_zamowienia))
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            list.Add(order);
+                            if (line == string.Empty) continue;
+                            if (line.ToLower().Contains("\"status\"")) continue;
+
+                            var order = ImportTools.ReturnOrder(line);
+                            if (order != null && !list.Any(x => x.ID_zamowienia == order.ID_zamowienia))
+                            {
+                                list.Add(order);
+                            }
                         }
                     }
+
+                    //Tworzenie archiwum
                 }
 
-                //Tworzenie archiwum
+                if (list.Any())
+                {
+                    OrderDbC.AddOrders(ImportTools.PoprawDane(list));
+                }
             }
-
-            if (list.Any())
+            catch(Exception ex)
             {
-                OrderDbC.AddOrders(ImportTools.PoprawDane(list));
+                NLogConfig.WriteLog(ex.ToString());
             }
-
+            
             return Ok();
         }
         [HttpPut("update")]
