@@ -29,7 +29,8 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                             Nazwa_produktu = reader[1].ToString(),
                             Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
                             Stan_magazynowy = (int)reader[3],
-                            Potrzebna_ilosc = (int)reader[4]
+                            Potrzebna_ilosc = (int)reader[4],
+                            Parametry = Convert.IsDBNull(reader[5]) ? "" : reader[5].ToString()
                         });
                     }
 
@@ -68,7 +69,9 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                             Nazwa_produktu = reader[1].ToString(),
                             Karton = CartonDbC.GetCarton((int)reader[2]),
                             Stan_magazynowy = (int)reader[3],
-                            Potrzebna_ilosc = (int)reader[4]
+                            Potrzebna_ilosc = (int)reader[4],
+                            Parametry = Convert.IsDBNull(reader[5]) ? "" : reader[5].ToString()
+
                         };
                     }
 
@@ -109,7 +112,9 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                             Nazwa_produktu = reader[1].ToString(),
                             Karton = cartons.Where(x => x.ID_kartonu == (int)reader[2]).FirstOrDefault(),
                             Stan_magazynowy = (int)reader[3],
-                            Potrzebna_ilosc = (int)reader[4]
+                            Potrzebna_ilosc = (int)reader[4],
+                            Parametry = Convert.IsDBNull(reader[5]) ? "" : reader[5].ToString()
+
                         });
                     }
 
@@ -131,7 +136,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                 using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
                     //Zapytanie SQL
-                    SqlCommand command = new SqlCommand($"INSERT INTO Produkt VALUES ('{form.SKU}', '{form.Nazwa_produktu}', {form.ID_kartonu}, {form.Stan_magazynowy}, {form.Potrzebna_ilosc}); ", Connection);
+                    SqlCommand command = new SqlCommand($"INSERT INTO Produkt VALUES ('{form.SKU}', '{form.Nazwa_produktu}', {form.ID_kartonu}, {form.Stan_magazynowy}, {form.Potrzebna_ilosc}, '{form.Parametry}'); ", Connection);
 
                     Connection.Open();
                     SqlDataReader reader = command.ExecuteReader();

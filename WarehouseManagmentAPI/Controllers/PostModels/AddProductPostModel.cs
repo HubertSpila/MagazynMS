@@ -7,5 +7,6 @@
         public int ID_kartonu { get; set; }
         public int Stan_magazynowy { get; set; }
         public int Potrzebna_ilosc { get; set; }
+        public string Parametry { get; set; }  
     }
 }
