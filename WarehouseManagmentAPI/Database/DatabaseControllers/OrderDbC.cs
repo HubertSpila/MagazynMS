@@ -31,7 +31,10 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
                     try { order.ID_kartonu2 = (int)reader[3]; }
                     catch { order.ID_kartonu2 = null; }
-                    
+
+                    try { order.Zweryfikowano = (int)reader[4]; }
+                    catch { order.Zweryfikowano = null; }
+
                     order.Pozycje = new List<PositionModel>();
 
                     orders.Add(order);
@@ -90,7 +93,10 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
                     try { order.ID_kartonu2 = (int)reader[3]; }
                     catch { order.ID_kartonu2 = null; }
-                    
+
+                    try { order.Zweryfikowano = (int)reader[4]; }
+                    catch { order.Zweryfikowano = null; }
+
                     order.Pozycje = new List<PositionModel>();
                 }
 
@@ -163,7 +169,7 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                     Connection.Open();
                     foreach (var order in list)
                     {
-                        string addOrderQuery = $"INSERT INTO Zamowienie VALUES({order.ID_zamowienia},{order.ID_kartonu}, {(order.Pozycje.Any(x=>x.Czy_na_stanie == true)? 1: 0)},NULL)";
+                        string addOrderQuery = $"INSERT INTO Zamowienie VALUES({order.ID_zamowienia},{order.ID_kartonu}, {(order.Pozycje.Any(x=>x.Czy_na_stanie == true)? 1: 0)},NULL, 0)";
                         SqlCommand addOrderCommand = new SqlCommand(addOrderQuery, Connection);
                         addOrderCommand.ExecuteNonQuery();
 
@@ -210,6 +216,30 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
 
             return true;
         }
+        public static bool WerifyOrder(int id)
+        {
+            try
+            {
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    string query = $"UPDATE Zamowienie SET Zweryfikowano = 2 WHERE ID_zamowienia = {id}; ";
 
+                    SqlCommand command = new SqlCommand(query, Connection);
+
+                    Connection.Open();
+
+                    command.ExecuteNonQuery();
+
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

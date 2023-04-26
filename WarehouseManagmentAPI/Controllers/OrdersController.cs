@@ -29,6 +29,14 @@ namespace WarehouseManagmentAPI.Controllers
 
             return Ok(order);
         }
+        //Zwraca zamówienie o podanym id
+        [HttpGet("werify/{id}")]
+        public ActionResult<string> WerifyOrder(int id)
+        {
+            bool wynik = OrderDbC.WerifyOrder(id);
+
+            return Ok(wynik.ToString());
+        }
 
         //filtrowanie
         [HttpGet("filtr")]
@@ -90,6 +98,13 @@ namespace WarehouseManagmentAPI.Controllers
         public ActionResult<string> UpdateCarton(UpdateCartonOrderPostModel form)
         {
             OrderDbC.UpdateCarton(form);
+            return Ok();
+        }
+
+        [HttpPut("WarehouseOut")]
+        public ActionResult<string> WarehouseOut(WarehouseOutPostModel form)
+        {
+            ProductDbC.WarehousOut(form);
             return Ok();
         }
     }

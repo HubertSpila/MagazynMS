@@ -158,12 +158,50 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
                 using (SqlConnection Connection = new SqlConnection(Config._connectionString))
                 {
                     //Zapytanie SQL
-                    SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}'; ", Connection);
+                    SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}' AND Parametry = '{form.parametry}' ; ", Connection);
 
                     Connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
-
                     reader.Close();
+
+                    if (form.parametry == string.Empty)
+                    {
+                        SqlCommand command2 = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {form.ilosc} WHERE SKU = '{form.sku}' AND Parametry is NULL ; ", Connection);
+                        SqlDataReader reader2 = command2.ExecuteReader();
+                        reader2.Close();
+                    }
+
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
+
+        }
+        public static void WarehousOut(WarehouseOutPostModel form)
+        {
+            try
+            {
+                ProductModel prod = GetProducts().Where(x=>x.SKU == form.SKU && x.Parametry == form.Parametry).FirstOrDefault();
+
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {--prod.Stan_magazynowy} WHERE SKU = '{form.SKU}' AND Parametry = '{form.Parametry}' ; ", Connection);
+
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    reader.Close();
+
+                    if (form.Parametry == string.Empty)
+                    {
+                        SqlCommand command2 = new SqlCommand($"UPDATE Produkt SET Stan_magazynowy = {prod.Stan_magazynowy} WHERE SKU = '{form.SKU}' AND Parametry is NULL ; ", Connection);
+                        SqlDataReader reader2 = command2.ExecuteReader();
+                        reader2.Close();
+                    }
+
                     Connection.Close();
                 }
             }
