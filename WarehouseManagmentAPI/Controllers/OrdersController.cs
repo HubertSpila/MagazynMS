@@ -107,5 +107,7 @@ namespace WarehouseManagmentAPI.Controllers
             ProductDbC.WarehousOut(form);
             return Ok();
         }
+        
+       
     }
 }

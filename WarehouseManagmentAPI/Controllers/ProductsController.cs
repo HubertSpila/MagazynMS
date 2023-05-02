@@ -55,5 +55,12 @@ namespace WarehouseManagmentAPI.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("delete/{sku}")]
+        public ActionResult<string> DeleteProduct(string sku)
+        {
+            ProductDbC.DeleteProduct(sku);
+            return Ok();
+        }
     }
 }

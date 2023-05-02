@@ -211,5 +211,26 @@ namespace WarehouseManagmentAPI.Database.DatabaseControllers
             }
 
         }
+        public static void DeleteProduct(string sku)
+        {
+            try
+            {
+                using (SqlConnection Connection = new SqlConnection(Config._connectionString))
+                {
+                    //Zapytanie SQL
+                    SqlCommand command = new SqlCommand($"DELETE FROM Produkt WHERE SKU = '{sku}'; ", Connection);
+
+                    Connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    reader.Close();
+                    Connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogConfig.WriteLog(ex.ToString());
+            }
+        }
     }
 }
